@@ -1,23 +1,10 @@
 from django.shortcuts import render
-
-# dummy data
-posts = [
-    {
-        'author': 'matthew',
-        'title': 'the day',
-        'content': 'the content'
-    },
-{
-        'author': 'jane',
-        'title': 'the day',
-        'content': 'the content'
-    }
-]
+from .models import Post
 
 
 def home(request):
     context = {
-        'post': posts
+        'posts': Post.objects.all()
     }
     return render(request, 'chat/home.html', context)
 
