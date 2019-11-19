@@ -3,6 +3,21 @@ from django.shortcuts import render, redirect
 from .forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 
+from users.models import User
+from users.serializers import UserSerializer
+
+from rest_framework import generics
+
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
 
 def register(request):
     if request.method == 'POST':
