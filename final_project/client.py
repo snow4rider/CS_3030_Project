@@ -63,7 +63,7 @@ class ClientUser:
         print("User not found\n")
 
 
-    def checkMessages(self):
+    def retrieveMessages(self):
 
         newMessages = []
 
@@ -74,6 +74,13 @@ class ClientUser:
             if message['recipient'] == self.username:
                 newMessages.append(message)
         return newMessages
+
+
+    def checkMessages(self, messages):
+        for message in messages:
+            print("Message from " + message['sender'] + ":")
+            print("\t" + message['text'] + "\n")
+
 
 
     def sendMessage(self):
@@ -116,8 +123,11 @@ while True:
     if selection == 1:
         user.addFriend()
     elif selection == 2:
-        newMessages = user.checkMessages()
+        newMessages = user.retrieveMessages()
         print(f"\nYou have {len(newMessages)} new messages\n")
+        view = input("View now? (Y/N): ").lower()
+        if view == 'y':
+            user.checkMessages(newMessages)
     elif selection == 3:
         user.sendMessage()
     elif selection == 0:
