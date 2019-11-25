@@ -1,4 +1,5 @@
-import requests, json
+import json
+import requests
 
 
 class ClientUser:
@@ -70,7 +71,7 @@ class ClientUser:
         res = requests.get(self.baseCall + self.allMessages).text
         messages = json.loads(res)
         for message in messages:
-            if message.recipient == self.username:
+            if message['recipient'] == self.username:
                 newMessages.append(message)
         return newMessages
 
