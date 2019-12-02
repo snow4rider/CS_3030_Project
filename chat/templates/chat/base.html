@@ -20,7 +20,7 @@
 </head>
 <body>
     <header class="site-header">
-      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+      <nav class="navbar navbar-expand-md navbar-dark bg-info fixed-top">
         <div class="container">
           <a class="navbar-brand mr-4" href="{% url 'chat-home' %}">Chat</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +73,9 @@
         </div>
       </div>
     </main>
+    <footer class="container-fluid bg-4 text-center">
+        <p>Chat-about Made By <a href="{% url 'chat-about' %}">chat-about</a></p>
+    </footer>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
