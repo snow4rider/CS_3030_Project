@@ -5,6 +5,7 @@ from PIL import Image
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=150, unique=True, default="")
     bio = models.TextField()
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
 
@@ -13,6 +14,8 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+        self.username = self.user.username
 
         img = Image.open(self.image.path)
 

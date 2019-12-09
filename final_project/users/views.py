@@ -2,6 +2,10 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
+from rest_framework import generics
+
+from .serializers import ProfileSerializer
+from .models import Profile
 
 
 def register(request):
@@ -41,4 +45,6 @@ def profile(request):
     return render(request, 'users/profile.html', context)
 
 
-
+class ProfileList(generics.ListCreateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
