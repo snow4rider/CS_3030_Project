@@ -1,8 +1,23 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
+from PIL import Image
 
 
-class User(AbstractUser):
-    # username, first_name, last_name, date_joined and email already in AbstractUser
-    description = models.CharField(max_length=500, unique=False, blank=True, null=False, default="")
-    img_profile = models.CharField(max_length=100, unique=False, blank=True, null=False, default="")
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField()
+    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        img = Image.open(self.image.path)
+
+        # limits the size of the profile photo to 300px by 300px
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
