@@ -1,11 +1,12 @@
 import json
 import requests
+import webbrowser
 
 
 class ClientUser:
     # API Calls
     baseCall = "http://127.0.0.1:8000/"
-    allUsers = "users/"
+    allProfiles = "profiles/"
     allMessages = "messages/"
 
     # User info
@@ -14,13 +15,16 @@ class ClientUser:
     id = 0
     friends = {}
 
+    def register(self):
+        webbrowser.open_new(self.baseCall + 'register/')
+
 
     def login(self):
         self.username = input("Enter your username: ")
         self.password = input("Enter your password: ")
 
         # Authenticate
-        res = requests.get(self.baseCall + self.allUsers).text
+        res = requests.get(self.baseCall + self.allProfiles).text
         usersList = json.loads(res)
         for user in usersList:
             if user['username'] == self.username:
@@ -31,7 +35,7 @@ class ClientUser:
             self.username = ""
             self.password = ""
             return False
-        res = requests.get(self.baseCall + "user/" + str(self.id) + "/", auth=(self.username, self.password))
+        res = requests.get(self.baseCall + "profile/" + str(self.id) + "/", auth=(self.username, self.password))
         if res.status_code != 200:
             print("Invalid username or password")
             self.username = ""
@@ -98,9 +102,11 @@ class ClientUser:
             print("Meesage sent\n")
 
 
+
 # start of client
 user = ClientUser()
 loggedIn = False
+user.register()
 while not loggedIn:
     loggedIn = user.login()
     print()
