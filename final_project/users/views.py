@@ -6,6 +6,7 @@ from rest_framework import generics
 
 from .serializers import ProfileSerializer
 from .models import Profile
+from .permissions import IsUser, ReadOnly
 
 
 def register(request):
@@ -48,3 +49,10 @@ def profile(request):
 class ProfileList(generics.ListCreateAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+    permission_classes = (ReadOnly,)
+
+
+class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = (IsUser,)

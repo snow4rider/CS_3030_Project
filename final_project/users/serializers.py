@@ -6,4 +6,4 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('username',)
+        fields = ('username', 'logged_on')
