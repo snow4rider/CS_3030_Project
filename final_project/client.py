@@ -43,8 +43,23 @@ class ClientUser:
             self.id = 0
             return False
 
-        # Return true if authenticated
+        # If authenticated:
+        # Set logged in field to true
+        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on':True}, auth=(self.username, self.password))
+
+        # Pull friends list
+
+
+        # return true
         return True
+
+
+    def getFriendsList(self):
+        pass
+
+
+    def logout(self):
+        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on':False}, auth=(self.username, self.password))
 
 
     def addFriend(self):
@@ -55,7 +70,7 @@ class ClientUser:
             return
 
         # Search for friend in database
-        res = requests.get(self.baseCall + self.allUsers).text
+        res = requests.get(self.baseCall + self.allProfiles).text
         allUsers = json.loads(res)
         for user in allUsers:
             if user['username'] == friendUsername:
@@ -106,7 +121,6 @@ class ClientUser:
 # start of client
 user = ClientUser()
 loggedIn = False
-user.register()
 while not loggedIn:
     loggedIn = user.login()
     print()
@@ -129,4 +143,4 @@ while True:
     elif selection == 0:
         break
     else:
-        continue
+        print("Invalid selection.")
