@@ -50,10 +50,11 @@ class ClientUser:
 
         # Pull friends list
         friendsListStr = self.getFriendsList()
-        friendIDs = [int(i) for i in friendsListStr.split(',')]
-        for user in usersList:
-            if user['id'] in friendIDs:
-                self.friends[user['username']] = user['id']
+        if friendsListStr != '':
+            friendIDs = [int(i) for i in friendsListStr.split(',')]
+            for user in usersList:
+                if user['id'] in friendIDs:
+                    self.friends[user['username']] = user['id']
 
         # return true
         return True
@@ -88,10 +89,16 @@ class ClientUser:
 
                 # Update database
                 currentFriends = self.getFriendsList()
-                requests.put(self.baseCall + "profile/" + str(self.id) + '/',
-                             {'friends': currentFriends + ',' + str(user['id'])},
-                             auth=(self.username, self.password))
+                if currentFriends == '':
+                    requests.put(self.baseCall + "profile/" + str(self.id) + '/',
+                                 {'friends': str(user['id'])},
+                                 auth=(self.username, self.password))
+                else:
+                    requests.put(self.baseCall + "profile/" + str(self.id) + '/',
+                                 {'friends': currentFriends + ',' + str(user['id'])},
+                                 auth=(self.username, self.password))
 
+                # Print confirmation
                 print("Friend added\n")
                 return
 
@@ -161,6 +168,7 @@ while True:
     elif selection == 3:
         user.sendMessage()
     elif selection == 0:
+        user.logout()
         break
     else:
         print("Invalid selection.")
