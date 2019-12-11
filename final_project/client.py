@@ -24,8 +24,8 @@ class ClientUser:
         self.password = input("Enter your password: ")
 
         # Authenticate
-        res = requests.get(self.baseCall + self.allProfiles).text
-        usersList = json.loads(res)
+        res = requests.get(self.baseCall + self.allProfiles)
+        usersList = json.loads(res.text)
         for user in usersList:
             if user['username'] == self.username:
                 self.id = user['id']
@@ -45,21 +45,29 @@ class ClientUser:
 
         # If authenticated:
         # Set logged in field to true
-        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on':True}, auth=(self.username, self.password))
+        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on':True},
+                     auth=(self.username, self.password))
 
         # Pull friends list
-
+        friendsListStr = self.getFriendsList()
+        friendIDs = [int(i) for i in friendsListStr.split(',')]
+        for user in usersList:
+            if user['id'] in friendIDs:
+                self.friends[user['username']] = user['id']
 
         # return true
         return True
 
 
-    def getFriendsList(self):
-        pass
-
-
     def logout(self):
-        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on':False}, auth=(self.username, self.password))
+        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on':False},
+                     auth=(self.username, self.password))
+
+
+    def getFriendsList(self):
+        res = requests.get(self.baseCall + "profile/" + str(self.id) + "/", auth=(self.username, self.password))
+        return json.loads(res.text)['friends']
+
 
 
     def addFriend(self):
@@ -74,7 +82,16 @@ class ClientUser:
         allUsers = json.loads(res)
         for user in allUsers:
             if user['username'] == friendUsername:
+
+                # Add to local friends
                 self.friends[friendUsername] = user['id']
+
+                # Update database
+                currentFriends = self.getFriendsList()
+                requests.put(self.baseCall + "profile/" + str(self.id) + '/',
+                             {'friends': currentFriends + ',' + str(user['id'])},
+                             auth=(self.username, self.password))
+
                 print("Friend added\n")
                 return
 
@@ -124,6 +141,9 @@ loggedIn = False
 while not loggedIn:
     loggedIn = user.login()
     print()
+
+for i in user.friends.keys():
+    print(i)
 
 # display menu
 while True:
