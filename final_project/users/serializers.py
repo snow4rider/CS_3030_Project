@@ -7,3 +7,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('username', 'logged_on', 'id')
+
+
+class ProfileListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = ('username', 'id')

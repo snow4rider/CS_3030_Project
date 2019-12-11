@@ -4,7 +4,7 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
 from rest_framework import generics
 
-from .serializers import ProfileSerializer
+from users import serializers
 from .models import Profile
 from .permissions import IsUser, ReadOnly
 
@@ -48,11 +48,11 @@ def profile(request):
 
 class ProfileList(generics.ListCreateAPIView):
     queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+    serializer_class = serializers.ProfileListSerializer
     permission_classes = (ReadOnly,)
 
 
 class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+    serializer_class = serializers.ProfileSerializer
     permission_classes = (IsUser,)
