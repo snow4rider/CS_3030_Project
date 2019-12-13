@@ -18,10 +18,9 @@ class ClientUser:
     def register(self):
         webbrowser.open_new(self.baseCall + 'register/')
 
-
-    def login(self):
-        self.username = input("Enter your username: ")
-        self.password = input("Enter your password: ")
+    def login(self, username, password):
+        self.username = username
+        self.password = password
 
         # Authenticate
         res = requests.get(self.baseCall + self.allProfiles)
@@ -45,7 +44,7 @@ class ClientUser:
 
         # If authenticated:
         # Set logged in field to true
-        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on':True},
+        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on': True},
                      auth=(self.username, self.password))
 
         # Pull friends list
@@ -59,17 +58,13 @@ class ClientUser:
         # return true
         return True
 
-
     def logout(self):
-        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on':False},
+        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on': False},
                      auth=(self.username, self.password))
-
 
     def getFriendsList(self):
         res = requests.get(self.baseCall + "profile/" + str(self.id) + "/", auth=(self.username, self.password))
         return json.loads(res.text)['friends']
-
-
 
     def addFriend(self):
         friendUsername = input("Username of new friend: ")
@@ -105,7 +100,6 @@ class ClientUser:
         # If user is not found
         print("User not found\n")
 
-
     def checkMessages(self):
 
         newMessages = []
@@ -117,7 +111,6 @@ class ClientUser:
             if message['recipient'] == self.username:
                 newMessages.append(message)
         return newMessages
-
 
     def sendMessage(self):
 
@@ -141,34 +134,33 @@ class ClientUser:
             print("Meesage sent\n")
 
 
-
-# start of client
-user = ClientUser()
-loggedIn = False
-while not loggedIn:
-    loggedIn = user.login()
-    print()
-
-for i in user.friends.keys():
-    print(i)
-
-# display menu
-while True:
-    print("1. Add a friend")
-    print("2. Check messages")
-    print("3. Send a message")
-    print("(0 to exit)")
-
-    selection = int(input("What would you like to do?:"))
-    if selection == 1:
-        user.addFriend()
-    elif selection == 2:
-        newMessages = user.checkMessages()
-        print(f"\nYou have {len(newMessages)} new messages\n")
-    elif selection == 3:
-        user.sendMessage()
-    elif selection == 0:
-        user.logout()
-        break
-    else:
-        print("Invalid selection.")
+# # start of client
+# user = ClientUser()
+# loggedIn = False
+# while not loggedIn:
+#     loggedIn = user.login()
+#     print()
+#
+# for i in user.friends.keys():
+#     print(i)
+#
+# # display menu
+# while True:
+#     print("1. Add a friend")
+#     print("2. Check messages")
+#     print("3. Send a message")
+#     print("(0 to exit)")
+#
+#     selection = int(input("What would you like to do?:"))
+#     if selection == 1:
+#         user.addFriend()
+#     elif selection == 2:
+#         newMessages = user.checkMessages()
+#         print(f"\nYou have {len(newMessages)} new messages\n")
+#     elif selection == 3:
+#         user.sendMessage()
+#     elif selection == 0:
+#         user.logout()
+#         break
+#     else:
+#         print("Invalid selection.")
