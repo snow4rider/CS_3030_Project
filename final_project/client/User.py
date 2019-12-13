@@ -3,7 +3,7 @@ import requests
 import webbrowser
 
 
-class ClientUser:
+class User:
     # API Calls
     baseCall = "http://127.0.0.1:8000/"
     allProfiles = "profiles/"
@@ -14,6 +14,7 @@ class ClientUser:
     password = ""
     id = 0
     friends = {}
+    logged_on = False
 
     def register(self):
         webbrowser.open_new(self.baseCall + 'register/')
@@ -30,13 +31,11 @@ class ClientUser:
                 self.id = user['id']
                 break
         if self.id == 0:
-            print("User not found")
             self.username = ""
             self.password = ""
             return False
         res = requests.get(self.baseCall + "profile/" + str(self.id) + "/", auth=(self.username, self.password))
         if res.status_code != 200:
-            print("Invalid username or password")
             self.username = ""
             self.password = ""
             self.id = 0
@@ -46,6 +45,7 @@ class ClientUser:
         # Set logged in field to true
         requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on': True},
                      auth=(self.username, self.password))
+        self.logged_on = True
 
         # Pull friends list
         friendsListStr = self.getFriendsList()
@@ -59,8 +59,9 @@ class ClientUser:
         return True
 
     def logout(self):
-        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on': False},
-                     auth=(self.username, self.password))
+        if self.logged_on:
+            requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on': False},
+                         auth=(self.username, self.password))
 
     def getFriendsList(self):
         res = requests.get(self.baseCall + "profile/" + str(self.id) + "/", auth=(self.username, self.password))
