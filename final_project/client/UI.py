@@ -38,3 +38,13 @@ class Application(tk.Tk):
     def show_page(self, page):
         active_page = self.pages[page]
         active_page.tkraise()
+
+    # Update a page in the application
+    def update_page(self, page, activeFriend=None):
+        if activeFriend is None:
+            window = page(self.main_window, self, self.user)
+        else:
+            window = page(self.main_window, self, self.user, activeFriend)
+
+        self.pages[page] = window
+        window.grid(row=0, column=0, sticky="nsew")

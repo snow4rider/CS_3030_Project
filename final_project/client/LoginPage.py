@@ -85,4 +85,5 @@ class LoginPage(tk.Frame):
 
         # Change to chat page
         else:
+            application.update_page((ChatPage))
             application.show_page(ChatPage)
