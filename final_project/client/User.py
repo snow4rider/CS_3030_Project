@@ -4,21 +4,23 @@ import webbrowser
 
 
 class User:
-    # API Calls
-    baseCall = "http://127.0.0.1:8000/"
-    allProfiles = "profiles/"
-    allMessages = "messages/"
+    def __init__(self):
+        # API Calls
+        self.baseCall = "http://127.0.0.1:8000/"
+        self.ownProfile = ""
+        self.allProfiles = "profiles/"
+        self.allMessages = "messages/"
 
-    # User info
-    username = ""
-    password = ""
-    id = 0
-    friends = {}
+        # User info
+        self.username = ""
+        self.password = ""
+        self.id = 0
+        self.friends = {}
 
-    # Server info
-    logged_on = False
-    active_friend = ""
-    online_friends = ()
+        # Server info
+        self.logged_on = False
+        self.active_friend = ""
+        self.online_friends = ()
 
     def register(self):
         webbrowser.open_new(self.baseCall + 'register/')
@@ -47,7 +49,8 @@ class User:
 
         # If authenticated:
         # Set logged in field to true
-        requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on': True},
+        self.ownProfile = "profile/" + str(self.id) + "/"
+        requests.put(self.baseCall + self.ownProfile, {'logged_on': True},
                      auth=(self.username, self.password))
         self.logged_on = True
 
@@ -66,12 +69,13 @@ class User:
     def logout(self):
         if self.logged_on:
             self.logged_on = False
-            requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on': False},
+            requests.put(self.baseCall + self.ownProfile, {'logged_on': False},
                          auth=(self.username, self.password))
 
     def getFriendsList(self):
-        res = requests.get(self.baseCall + "profile/" + str(self.id) + "/", auth=(self.username, self.password))
-        return json.loads(res.text)['friends']
+        if self.logged_on:
+            res = requests.get(self.baseCall + self.ownProfile, auth=(self.username, self.password))
+            return json.loads(res.text)['friends']
 
     def updateFriendsOnline(self):
         if self.logged_on:
@@ -102,11 +106,11 @@ class User:
                 # Update database
                 currentFriends = self.getFriendsList()
                 if currentFriends == '':
-                    requests.put(self.baseCall + "profile/" + str(self.id) + '/',
+                    requests.put(self.baseCall + self.ownProfile,
                                  {'friends': str(user['id'])},
                                  auth=(self.username, self.password))
                 else:
-                    requests.put(self.baseCall + "profile/" + str(self.id) + '/',
+                    requests.put(self.baseCall + self.ownProfile,
                                  {'friends': currentFriends + ',' + str(user['id'])},
                                  auth=(self.username, self.password))
 
@@ -129,23 +133,19 @@ class User:
                 newMessages.append(message)
         return newMessages
 
-    def sendMessage(self):
+    def sendMessage(self, recipient, message):
 
         # Get recipient
-        recipient = input("Which friend would you like to message?: ")
         if recipient not in self.friends.keys():
-            print("Friend not found\n")
-            return
+            return "Friend not found"
 
         # Send message
-        message = input("Enter your message: ")
-        message = {
+        messageJSON = {
             'text': message,
             'recipient': recipient
         }
-
-        res = requests.post(self.baseCall + self.allMessages, data=message, auth=(self.username, self.password))
+        res = requests.post(self.baseCall + self.allMessages, data=messageJSON, auth=(self.username, self.password))
         if res.status_code != 201:
-            print("An error occured: Message not sent\n")
+            return "An error occurred: Message not sent."
         else:
-            print("Meesage sent\n")
+            return None

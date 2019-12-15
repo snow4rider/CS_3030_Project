@@ -4,7 +4,7 @@ import threading, time
 
 
 def checkOnlineFriends():
-    while True:
+    while not programComplete:
         time.sleep(1)
         app.pages[ChatPage].update_friends_online(user)
 
@@ -14,11 +14,13 @@ user = User()
 app = Application(user)
 
 # Start background threads to update from server
+programComplete = False
 updateFriendsOnlineThread = threading.Thread(target=checkOnlineFriends)
 updateFriendsOnlineThread.start()
 
 # Begin application
 app.mainloop()
+programComplete = True
 
 # Log user out when program closes
 user.logout()
