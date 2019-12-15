@@ -14,7 +14,11 @@ class User:
     password = ""
     id = 0
     friends = {}
+
+    # Server info
     logged_on = False
+    active_friend = ""
+    online_friends = ()
 
     def register(self):
         webbrowser.open_new(self.baseCall + 'register/')
@@ -54,18 +58,30 @@ class User:
             for user in usersList:
                 if user['id'] in friendIDs:
                     self.friends[user['username']] = user['id']
+        self.updateFriendsOnline()
 
         # return true
         return True
 
     def logout(self):
         if self.logged_on:
+            self.logged_on = False
             requests.put(self.baseCall + "profile/" + str(self.id) + '/', {'logged_on': False},
                          auth=(self.username, self.password))
 
     def getFriendsList(self):
         res = requests.get(self.baseCall + "profile/" + str(self.id) + "/", auth=(self.username, self.password))
         return json.loads(res.text)['friends']
+
+    def updateFriendsOnline(self):
+        if self.logged_on:
+            onlineFriends = []
+            res = requests.get(self.baseCall + self.allProfiles)
+            usersList = json.loads(res.text)
+            for user in usersList:
+                if user['logged_on'] and user['username'] in self.friends.keys():
+                    onlineFriends.append(user['username'])
+            self.online_friends = tuple(onlineFriends)
 
     def addFriend(self):
         friendUsername = input("Username of new friend: ")
@@ -133,35 +149,3 @@ class User:
             print("An error occured: Message not sent\n")
         else:
             print("Meesage sent\n")
-
-
-# # start of client
-# user = ClientUser()
-# loggedIn = False
-# while not loggedIn:
-#     loggedIn = user.login()
-#     print()
-#
-# for i in user.friends.keys():
-#     print(i)
-#
-# # display menu
-# while True:
-#     print("1. Add a friend")
-#     print("2. Check messages")
-#     print("3. Send a message")
-#     print("(0 to exit)")
-#
-#     selection = int(input("What would you like to do?:"))
-#     if selection == 1:
-#         user.addFriend()
-#     elif selection == 2:
-#         newMessages = user.checkMessages()
-#         print(f"\nYou have {len(newMessages)} new messages\n")
-#     elif selection == 3:
-#         user.sendMessage()
-#     elif selection == 0:
-#         user.logout()
-#         break
-#     else:
-#         print("Invalid selection.")

@@ -43,6 +43,13 @@ class LoginPage(tk.Frame):
         passwordEntry = Entry(passwordFrame, font=("Whitney", 16, "bold"), show="*")
         passwordEntry.pack(side=LEFT, padx=12, pady=10)
 
+        # Bind enter to login button function
+        usernameEntry.bind("<Return>", lambda event: self.login_button_command(user, usernameEntry, passwordEntry,
+                                                                         logoUsernameContainer, self, application))
+        passwordEntry.bind("<Return>", lambda event: self.login_button_command(user, usernameEntry, passwordEntry,
+                                                                         logoUsernameContainer, self, application))
+        usernameEntry.focus()
+
         # Button container
         buttonContainer = tk.Frame(passwordButtonContainer, bg="SlateGray4")
         buttonContainer.pack(pady=10)
