@@ -69,8 +69,7 @@ class User:
     def logout(self):
         if self.logged_on:
             self.logged_on = False
-            requests.patch(self.baseCall + self.ownProfile, {'logged_on': False},
-                         auth=(self.username, self.password))
+            requests.put(self.baseCall + self.ownProfile, {'logged_on': False}, auth=(self.username, self.password))
 
     def getFriendsList(self):
         if self.logged_on:

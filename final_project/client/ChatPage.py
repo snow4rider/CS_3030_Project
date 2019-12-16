@@ -79,7 +79,12 @@ class ChatPage(tk.Frame):
 
         # Set new active friend state
         user.active_friend = friend
-        self.friendButtons[friend].configure(bg="gray50")
+
+        # Remove new messages flag and set active
+        text = self.friendButtons[friend]['text']
+        if text.endswith(" (New Messages)"):
+            text = text.replace(" (New Messages)", '')
+        self.friendButtons[friend].configure(bg="gray50", text=text)
         self.chatWindows[friend].pack(fill=BOTH, expand=True, padx=10, pady=10)
 
     # Add a new friend
@@ -171,7 +176,7 @@ class ChatPage(tk.Frame):
         if user.logged_on and not self.pauseUpdates:
             user.updateFriendsOnline()
             for friend in self.friendButtons.keys():
-                if self.friendButtons[friend]['text'] in user.online_friends:
+                if friend in user.online_friends:
                     self.friendButtons[friend].image = self.onlineIcon
                     self.friendButtons[friend].configure(image=self.onlineIcon)
                 else:
