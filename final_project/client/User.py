@@ -50,7 +50,7 @@ class User:
         # If authenticated:
         # Set logged in field to true
         self.ownProfile = "profile/" + str(self.id) + "/"
-        requests.put(self.baseCall + self.ownProfile, {'logged_on': True},
+        requests.patch(self.baseCall + self.ownProfile, {'logged_on': True},
                      auth=(self.username, self.password))
         self.logged_on = True
 
@@ -69,7 +69,7 @@ class User:
     def logout(self):
         if self.logged_on:
             self.logged_on = False
-            requests.put(self.baseCall + self.ownProfile, {'logged_on': False},
+            requests.patch(self.baseCall + self.ownProfile, {'logged_on': False},
                          auth=(self.username, self.password))
 
     def getFriendsList(self):
@@ -87,39 +87,36 @@ class User:
                     onlineFriends.append(user['username'])
             self.online_friends = tuple(onlineFriends)
 
-    def addFriend(self):
-        friendUsername = input("Username of new friend: ")
+    def addFriend(self, name):
 
-        if friendUsername in self.friends.keys():
-            print("Friend already added\n")
-            return
+        if name in self.friends.keys():
+            return "Friend already added"
 
         # Search for friend in database
         res = requests.get(self.baseCall + self.allProfiles).text
         allUsers = json.loads(res)
         for user in allUsers:
-            if user['username'] == friendUsername:
+            if user['username'] == name:
 
                 # Add to local friends
-                self.friends[friendUsername] = user['id']
+                self.friends[name] = user['id']
 
                 # Update database
                 currentFriends = self.getFriendsList()
                 if currentFriends == '':
-                    requests.put(self.baseCall + self.ownProfile,
+                    requests.patch(self.baseCall + self.ownProfile,
                                  {'friends': str(user['id'])},
                                  auth=(self.username, self.password))
                 else:
-                    requests.put(self.baseCall + self.ownProfile,
+                    requests.patch(self.baseCall + self.ownProfile,
                                  {'friends': currentFriends + ',' + str(user['id'])},
                                  auth=(self.username, self.password))
 
                 # Print confirmation
-                print("Friend added\n")
-                return
+                return"Friend added"
 
         # If user is not found
-        print("User not found\n")
+        return "User not found"
 
     def checkMessages(self):
 
@@ -130,7 +127,13 @@ class User:
         messages = json.loads(res)
         for message in messages:
             if message['recipient'] == self.username:
+
+                # Add message to list
                 newMessages.append(message)
+
+                # Delete message from server
+                requests.delete(self.baseCall + "message/" + str(message['id']) + "/",
+                                auth=(self.username, self.password))
         return newMessages
 
     def sendMessage(self, recipient, message):
