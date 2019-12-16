@@ -15,7 +15,7 @@ class Application(tk.Tk):
         # Initialize the size of the whole application, its title, and the little icon
         # that appears at the top left of the window
         self.geometry('1024x512')
-        self.title("Chatter")
+        self.title("Chat-App")
         self.iconbitmap(r'media\favicon.ico')
 
         # Initialize the main content frame
